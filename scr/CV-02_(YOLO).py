@@ -33,6 +33,9 @@ while cap.isOpened():
         coordinates = box.xyxy                   # координати
         track_id = int(box.id.item()) if box.id is not None else None   # int num of tensor id
 
+        x, y, _, _ = box.xyxy[0].tolist()
+        cv2.putText(annotated, str(track_id), (int(x + 20), int(y + 20)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
         if confidence > 0.5:
             if track_id:
                 print(class_name, confidence, track_id)
@@ -44,9 +47,6 @@ while cap.isOpened():
     prev_time = time.time()
 
     cv2.putText(annotated, str(round(fps, 1)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
-    x, y, _, _ = box.xyxy[0].tolist()
-    cv2.putText(annotated, str(track_id), (int(x + 20), int(y + 20)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
     cv2.imshow("WINDOW", annotated)
                 
