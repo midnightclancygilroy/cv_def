@@ -16,20 +16,29 @@ while cap.isOpened():
     
     ret, frame = cap.read()
 
-    results = model(frame, verbose=False)
+    if not ret:
+        break
+
+    #results = model(frame, verbose=False)
+    results = model.track(frame, tracker="bytetrack.yaml", verbose=False)
+
+    if not results:
+        continue
+
     annotated = results[0].plot()
 
     for box in results[0].boxes:
         class_name = model.names[int(box.cls)]  # назва класу
-        confidence = box.conf                   # впевненість
+        confidence = round(box.conf.item(), 2)                     # впевненість
         coordinates = box.xyxy                   # координати
-        
+        track_id = int(box.id.item()) if box.id is not None else None   # int num of tensor id
+
         if confidence > 0.5:
-            print(class_name, confidence, coordinates)
+            if track_id:
+                print(class_name, confidence, track_id)
+            else:
+                print(class_name, coordinates)
 
-
-    if not ret:
-        break
 
     fps = 1/(time.time()-prev_time)    
     prev_time = time.time()
